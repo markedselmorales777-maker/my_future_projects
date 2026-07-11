@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub: Adjustable Split Workspace</title>
+    
+    <!-- Pyodide Core (Python WebAssembly Runtime) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.1/full/pyodide.js"></script>
+    
+    <!-- VS Code Engine (Monaco Editor Libraries) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Navigation Top Bar */
+        header { background-color: #1e1e2e; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; height: 60px; }
+        .status-badge { font-size: 14px; background: #313244; padding: 6px 12px; border-radius: 20px; color: #a6e3a1; }
+
+        /* Flexible Split Screen Container */
+        .workspace { display: flex; flex: 1; height: calc(100vh - 60px); background: #ffffff; position: relative; width: 100%; }
+
+        /* Left Side Panel (Starts at 50% width) */
+        .left-panel { display: flex; flex-direction: column; width: 50%; min-width: 200px; height: 100%; position: relative; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: #fafafa; border-bottom: 1px solid #e5e7eb; }
+        #editor-container { flex: 1; width: 100%; height: 100%; }
+
+        /* DRAGGABLE RESIZER LINE */
+        .resizer { width: 6px; background-color: #e5e7eb; cursor: col-resize; z-index: 10; transition: background-color 0.2s; height: 100%; }
+        .resizer:hover, .resizer.dragging { background-color: #89b4fa; /* Turns blue when dragging */ }
+
+        /* Right Side Panel (Takes up remaining dynamic space) */
+        .right-panel { display: flex; flex-direction: column; background: #ffffff; padding: 20px; flex: 1; min-width: 200px; height: 100%; }
+        .toolbar { display: flex; gap: 10px; margin-bottom: 15px; }
+        
+        /* Run Button */
+        .btn-run { background-color: #89b4fa; color: #11111b; border: none; padding: 10px 24px; font-size: 15px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-run:hover { background-color: #74c7ec; }
+        .btn-run:disabled { background-color: #cdd6f4; cursor: not-allowed; opacity: 0.6; }
+
+        /* Terminal Display Box */
+        .terminal-box { flex: 1; background-color: #181825; color: #cdd6f4; padding: 20px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; font-size: 15px; overflow-y: auto; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3); line-height: 1.5; }
+        .error-text { color: #f38ba8; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h3>Admiral Ventus Learning Hub</h3>
+        <div id="status" class="status-badge">🔄 Loading Workspace Systems...</div>
+    </header>
+
+    <!-- The Split Screen Layout Container -->
+    <div class="workspace" id="workspace">
+        
+        <!-- LEFT PANEL: Monaco Code Editor -->
+        <div class="left-panel" id="left-panel">
+            <div class="panel-header">
+                <strong>main.py</strong>
+            </div>
+            <div id="editor-container"></div>
+        </div>
+
+        <!-- THE DRAGGABLE SPLITTER BAR -->
+        <div class="resizer" id="drag-bar"></div>
+
+        <!-- RIGHT PANEL: Console Output -->
+        <div class="right-panel">
+            <div class="toolbar">
+                <button id="run-btn" class="btn-run" onclick="runPythonCode()" disabled>
+                    ▶ Run Code
+                </button>
+            </div>
+            <div id="output" class="terminal-box">Terminal outputs and execution paths will display here...</div>
+        </div>
+
+    </div>
+
+    <script>
+        let pyodideInstance = null;
+        let codeEditor = null;
+
+        const initialCode = `# Welcome Junior Dev! Type code below to try autocomplete indications.\n\nMarks = list()\nscore = int(input('Enter score: '))\n\nprint("Your score item is:", score)\n`;
+
+        // 1. Initialize Monaco Editor (VS Code Engine Setup)
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            codeEditor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: initialCode,
+                language: 'python',
+                theme: 'vs-light',
+                fontSize: 14,
+                automaticLayout: true, // Crucial! Automatically adjusts VS Code layout sizes on drag-resize
+                minimap: { enabled: false },
+                suggestOnTriggerCharacters: true
+            });
+            checkInitializationProgress();
+        });
+
+        // 2. Initialize Pyodide WebAssembly Python Engine
+        async function initPyodide() {
+            try {
+                pyodideInstance = await loadPyodide();
+                checkInitializationProgress();
+            } catch (err) {
+                document.getElementById('status').innerText = "Failed loading environment components.";
+                console.error(err);
+            }
+        }
+        initPyodide();
+
+        function checkInitializationProgress() {
+            if (pyodideInstance && codeEditor) {
+                document.getElementById('status').innerText = "🟢 System Ready to Code";
+                document.getElementById('run-btn').removeAttribute('disabled');
+            }
+        }
+
+        // 3. CAPTURE DRAG EVENTS FOR ADJUSTABLE SIDE PANEL
+        const resizer = document.getElementById('drag-bar');
+        const leftPanel = document.getElementById('left-panel');
+        const workspace = document.getElementById('workspace');
+
+        resizer.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            resizer.classList.add('dragging');
+            
+            document.addEventListener('mousemove', resizePanels);
+            document.addEventListener('mouseup', stopResizing);
+        });
+
+        function resizePanels(e) {
+            // Calculate the percentage width of the left workspace pane dynamically
+            const workspaceWidth = workspace.getBoundingClientRect().width;
+            let newLeftWidth = (e.clientX / workspaceWidth) * 100;
+
+            // Restrict panel ranges so they don't fold or disappear completely
+            if (newLeftWidth < 15) newLeftWidth = 15;
+            if (newLeftWidth > 85) newLeftWidth = 85;
+
+            leftPanel.style.width = `${newLeftWidth}%`;
+        }
+
+        function stopResizing() {
+            resizer.classList.remove('dragging');
+            document.removeEventListener('mousemove', resizePanels);
+            document.removeEventListener('mouseup', stopResizing);
+        }
+
+        // 4. Capture written code inside VS Code Wrapper and Run it via Python
+        async function runPythonCode() {
+            if (!pyodideInstance || !codeEditor) return;
+
+            const codeToExecute = codeEditor.getValue();
+            const outputConsole = document.getElementById('output');
+            outputConsole.innerText = "Running script context...";
+
+            let stdoutBuffer = "";
+            pyodideInstance.setStdout({ batched: (str) => { stdoutBuffer += str + "\n"; } });
+            pyodideInstance.setStderr({ batched: (str) => { stdoutBuffer += str + "\n"; } });
+
+            try {
+                await pyodideInstance.runPythonAsync(codeToExecute);
+                outputConsole.innerHTML = stdoutBuffer ? stdoutBuffer.replace(/\n/g, '<br>') : "Execution complete with no return values.";
+            } catch (pythonError) {
+                outputConsole.innerHTML = `<span class="error-text">Python Exception Context Error:<br>${pythonError.message.replace(/\n/g, '<br>')}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
