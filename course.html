@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventus Learning Hub - Course</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Navigation Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo" onclick="window.location.href='home.html'">Ventus Learning Hub</div>
+            <nav class="nav-links">
+                <a href="home.html" class="nav-tab">Main</a>
+                <a href="course.html" class="nav-tab active">Course</a>
+                <a href="activities.html" class="nav-tab">Activities</a>
+            </nav>
+        </div>
+        
+        <div class="header-right">
+            <div class="profile-badge">
+                <span class="user-avatar">👤</span>
+                <span class="profile-name">Mark Edsel Morales</span>
+            </div>
+            <a href="index.html" class="logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <!-- Course Content Area -->
+    <main class="content-body">
+        <div class="course-container">
+            <div class="course-sidebar">
+                <div class="sidebar-card">
+                    <h3>Python</h3>
+                    <p>Next lesson: July 18 at 5:30 PM</p>
+                    <button class="btn-primary-block">Connect to the lesson</button>
+                </div>
+                <ul class="topic-list">
+                    <li><span class="status-dot completed"></span> 1. Python Basics</li>
+                    <li><span class="status-dot completed"></span> 2. Control Structures</li>
+                    <li><span class="status-dot completed"></span> 3. Functions and Modules</li>
+                    <li><span class="status-dot in-progress"></span> 4. Module Turtle. Math for Dev</li>
+                    <li><span class="status-dot locked"></span> 5. Object-oriented Programming</li>
+                    <li class="active"><span class="status-dot active"></span> 6. PyGame Game Development Basics</li>
+                </ul>
+            </div>
+
+            <div class="course-main-content">
+                <h2>6. PyGame Game Development Basics</h2>
+                <p class="subtitle">Python Start 1st year / 8 modules</p>
+                
+                <div class="filter-tabs">
+                    <span class="filter-tab active">All tasks <sup>11</sup></span>
+                    <span class="filter-tab">Incomplete <sup>6</sup></span>
+                    <span class="filter-tab">On review <sup>1</sup></span>
+                </div>
+
+                <h3>LESSON 1. M6 L1. BASICS OF CREATING GAMES IN PYGAME</h3>
+                <div class="lessons-nodes-grid">
+                    <div class="node-item" onclick="window.location.href='activities.html'">
+                        <div class="node-circle completed">1</div>
+                        <p>Pygame: Questions and tasks</p>
+                    </div>
+                    <div class="node-item" onclick="window.location.href='activities.html'">
+                        <div class="node-circle active">📄</div>
+                        <p>Theory: The basics of Pygame</p>
+                    </div>
+                    <div class="node-item">
+                        <div class="node-circle locked">3</div>
+                        <p>Window Setup Creation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventus Learning Hub - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Navigation Header -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo" onclick="window.location.href='home.html'">Ventus Learning Hub</div>
+            <nav class="nav-links">
+                <a href="home.html" class="nav-tab active">Main</a>
+                <a href="course.html" class="nav-tab">Course</a>
+                <a href="activities.html" class="nav-tab">Activities</a>
+            </nav>
+        </div>
+        
+        <div class="header-right">
+            <div class="profile-badge">
+                <span class="user-avatar">👤</span>
+                <span class="profile-name">Mark Edsel Morales</span>
+            </div>
+            <a href="index.html" class="logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <!-- Home Dashboard Content -->
+    <main class="content-body">
+        <div class="dashboard-grid">
+            <!-- Next Lesson Banner -->
+            <div class="hero-banner">
+                <span class="badge-time">📅 Next Lesson: July 18 at 5:30 PM</span>
+                <h1>Python Game Dev</h1>
+                <p>M6 L3. The Fast Clicker game. Part 1</p>
+                <div class="banner-actions">
+                    <a href="course.html" class="btn-primary">Go to lessons</a>
+                    <button class="btn-secondary">Go to online lesson</button>
+                </div>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-summary-card">
+                <div class="avatar-large">🛸</div>
+                <h3>Mark Edsel Morales</h3>
+                <p class="subtitle">MY PROFILE</p>
+                <div class="stats-row">
+                    <div><strong>0</strong><p>Followers</p></div>
+                    <div><strong>5</strong><p>Projects</p></div>
+                    <div><strong>0</strong><p>Likes</p></div>
+                </div>
+                <button class="btn-outline">Customize</button>
+            </div>
+        </div>
+
+        <!-- Goals and Achievements -->
+        <div class="section-title-area">
+            <h2>Goals and achievements</h2>
+            <p>Receive, repeat and accumulate rewards for study and active actions</p>
+        </div>
+
+        <div class="cards-scroll-row">
+            <div class="goal-card card-purple">
+                <span class="level-indicator">Level 7 (25/25)</span>
+                <div class="card-icon">📖</div>
+                <h4>Learning more and more</h4>
+                <p>Complete the tasks in each module.</p>
+            </div>
+            <div class="goal-card card-blue">
+                <span class="level-indicator">Level 1 (0/1)</span>
+                <div class="card-icon">👶</div>
+                <h4>Make new friends</h4>
+                <p>Find friends from all over the world.</p>
+            </div>
+            <div class="goal-card card-green">
+                <span class="level-indicator">Level 8 (25/27)</span>
+                <div class="card-icon">📝</div>
+                <h4>Learning more and more</h4>
+                <p>Complete execution blocks cleanly.</p>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
